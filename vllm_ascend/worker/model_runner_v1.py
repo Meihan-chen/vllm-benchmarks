@@ -1327,7 +1327,7 @@ class NPUModelRunner(GPUModelRunner):
                     skip_compiled=has_encoder_input,
                 ),
                 self.maybe_get_kv_connector_output(
-                    scheduler_output, clear_metadata=clear_kv_metadata
+                    scheduler_output, defer_finalize=not clear_kv_metadata
                 ) as kv_connector_output,
             ):
                 hidden_states = self._model_forward(
@@ -2206,6 +2206,7 @@ class NPUModelRunner(GPUModelRunner):
         remove_lora: bool = True,
         is_graph_capturing: bool = False,
         num_active_loras: int = 0,
+        profile_seq_lens: int | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # only support eager mode and piecewise graph now
         assert cudagraph_runtime_mode is None or cudagraph_runtime_mode.valid_runtime_modes()
